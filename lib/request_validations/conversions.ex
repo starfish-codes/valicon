@@ -4,6 +4,14 @@ defmodule RequestValidations.Conversions do
   """
   alias RequestValidations.ConversionError
 
+  @doc """
+    Casts the string values inside the attrs map to the given types.
+    
+    ## Examples
+    
+        iex> cast(%{name: "Butterfree", number: "012"}, [name: :string, number: :integer])
+        {:ok, %{name: "Butterfree", number: 12}}
+  """
   @spec cast(map(), Keyword.t()) :: {:ok, map()} | {:error, [ConversionError.t()]}
   def cast(attrs, fields), do: cast(attrs, fields, [])
 
@@ -38,10 +46,14 @@ defmodule RequestValidations.Conversions do
   @spec parse(String.t(), :string) :: {:ok, String.t()}
   def parse(value, :date), do: Date.from_iso8601(value)
   def parse(value, :integer), do: parse_integer(value)
+  def parse(value, :float), do: parse_float(value)
   def parse(value, :boolean), do: parse_boolean(value)
   def parse(value, :list), do: parse_list(value)
-  def parse(value, :string), do: {:ok, value}
+  def parse(value, :string), do: parse_string(value)
 
+  @spec parse_string(term()) :: {:ok, String.t()} | {:error, :bad_string}
+  def parse_string(value) when is_binary(value), do: {:ok, value}
+  def parse_string(_value), do: {:error, :bad_string}
   @spec parse_integer(term()) :: {:ok, integer()} | {:error, :bad_integer}
   def parse_integer(value) do
     case Integer.parse(value) do
@@ -50,14 +62,23 @@ defmodule RequestValidations.Conversions do
     end
   end
 
+  @spec parse_float(term()) :: {:ok, float()} | {:error, :bad_float}
+  def parse_float(value) do
+    case Float.parse(value) do
+      {value, ""} -> {:ok, value}
+      _error -> {:error, :bad_float}
+    end
+  end
+
   @spec parse_boolean(term()) :: {:ok, boolean()} | {:error, :bad_boolean}
   def parse_boolean("true"), do: {:ok, true}
   def parse_boolean("false"), do: {:ok, false}
   def parse_boolean(_unexpeted), do: {:error, :bad_boolean}
 
-  @spec parse_list(String.t() | [String.t()]) :: {:ok, [String.t()]}
+  @spec parse_list(String.t() | [String.t()]) :: {:ok, [String.t()]} | {:error, :bad_list}
   def parse_list(list) when is_list(list), do: {:ok, list}
   def parse_list(val) when is_binary(val), do: {:ok, String.split(val, ",")}
+  def parse_list(_unexpected), do: {:error, :bad_list}
 
   defp convertion_error(key, type),
     do: ConversionError.new("#{key}", "#{key} must be a value of #{type} type")
