@@ -150,4 +150,143 @@ defmodule RequestValidations.ConversionsTest do
              } == trim_whitespaces(map)
     end
   end
+
+  describe "upcase_in/2" do
+    test "upcases the value of the given key" do
+      map = %{
+        key: "value",
+        other_key: "other value"
+      }
+
+      assert %{
+               key: "VALUE",
+               other_key: "other value"
+             } == upcase_in(map, :key)
+    end
+  end
+
+  describe "downcase_in/2" do
+    test "downcases the value of the given key" do
+      map = %{
+        key: "VALUE",
+        other_key: "other value"
+      }
+
+      assert %{
+               key: "value",
+               other_key: "other value"
+             } == downcase_in(map, :key)
+    end
+  end
+
+  describe "transform/2" do
+    test "transforms the keys of the map" do
+      map = %{
+        key: "value",
+        other_key: "other value"
+      }
+
+      assert %{
+               new_key: "value",
+               new_other_key: "other value"
+             } == transform(map, key: :new_key, other_key: :new_other_key)
+    end
+  end
+
+  describe "transform_in/3" do
+    test "transforms the value of the given key" do
+      map = %{
+        key: %{nested_key: "value"},
+        other_key: "other value"
+      }
+
+      assert %{
+               key: %{nested_key: "VALUE"},
+               other_key: "other value"
+             } ==
+               transform_in(map, :key, fn map ->
+                 transform_in(map, :nested_key, &String.upcase/1)
+               end)
+    end
+
+    test "supports list values" do
+      map = %{
+        key: ["value", "other value"],
+        other_key: "other value"
+      }
+
+      assert %{
+               key: ["VALUE", "OTHER VALUE"],
+               other_key: "other value"
+             } ==
+               transform_in(map, :key, &String.upcase/1)
+    end
+
+    test "ignores non existing keys" do
+      map = %{
+        key: "value",
+        other_key: "other value"
+      }
+
+      assert %{
+               key: "value",
+               other_key: "other value"
+             } == transform_in(map, :foo, &String.upcase/1)
+    end
+
+    test "ignores non string values" do
+      map = %{
+        key: 42,
+        other_key: "other value"
+      }
+
+      assert %{
+               key: 42,
+               other_key: "other value"
+             } == transform_in(map, :key, &String.upcase/1)
+    end
+  end
+
+  @uuid_binary <<85, 14, 132, 0, 194, 155, 65, 212, 167, 22, 68, 102, 85, 68, 240, 3>>
+
+  describe "parse_uuid/1" do
+    test "parses a valid UUID" do
+      uuid = "550e8400-c29b-41d4-a716-44665544f003"
+
+      assert {:ok, @uuid_binary} ==
+               parse_uuid(uuid)
+    end
+
+    test "parses a valid UUID in upper case" do
+      uuid = "550E8400-C29B-41D4-A716-44665544F003"
+
+      assert {:ok, @uuid_binary} ==
+               parse_uuid(uuid)
+    end
+
+    test "parses a valid UUID in mixed case" do
+      uuid = "550e8400-C29B-41D4-a716-44665544F003"
+
+      assert {:ok, @uuid_binary} ==
+               parse_uuid(uuid)
+    end
+
+    test "does  parse a null UUID" do
+      assert {:ok, <<0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0>>} ==
+               parse_uuid("00000000-0000-0000-0000-000000000000")
+    end
+
+    test "does not parse an invalid UUID with invalid characters" do
+      assert :error == parse_uuid("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
+    end
+
+    test "does not parse an invalid UUID with invalid format" do
+      assert :error == parse_uuid("xxxxxxxx-xxxx")
+    end
+
+    test "does not parse a binary uuid" do
+      assert :error ==
+               parse_uuid(@uuid_binary)
+    end
+  end
 end

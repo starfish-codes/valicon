@@ -3,6 +3,8 @@ defmodule RequestValidations.Validations do
     The different validations that can be applied to the attributes.
   """
   alias RequestValidations.ValidationError
+  alias RequestValidations.Conversions
+
   @spec validate_required_fields(map(), [atom()], String.t()) :: [ValidationError.t()]
   def validate_required_fields(attrs, keys, prefix \\ "") do
     keys
@@ -83,10 +85,12 @@ defmodule RequestValidations.Validations do
     else
       allowed_values = Enum.join(allowed, ", ")
 
-      ValidationError.new(
-        "#{prefix}#{key}",
-        "#{prefix}#{key} must be one of the following: #{allowed_values}"
-      )
+      [
+        ValidationError.new(
+          "#{prefix}#{key}",
+          "#{prefix}#{key} must be one of the following: #{allowed_values}"
+        )
+      ]
     end
   end
 
@@ -121,7 +125,12 @@ defmodule RequestValidations.Validations do
   def validate_greater_than_or_equal_to(attrs, key, limit, prefix \\ "") do
     case Map.fetch(attrs, key) do
       {:ok, value} when value < limit ->
-        ValidationError.new("#{prefix}#{key}", "#{key} must be greater than or equal to #{limit}")
+        [
+          ValidationError.new(
+            "#{prefix}#{key}",
+            "#{key} must be greater than or equal to #{limit}"
+          )
+        ]
 
       {:ok, _value} ->
         []
@@ -135,7 +144,7 @@ defmodule RequestValidations.Validations do
   def validate_less_than_or_equal_to(attrs, key, limit, prefix \\ "") do
     case Map.fetch(attrs, key) do
       {:ok, value} when value > limit ->
-        ValidationError.new("#{prefix}#{key}", "#{key} must be less than or equal to #{limit}")
+        [ValidationError.new("#{prefix}#{key}", "#{key} must be less than or equal to #{limit}")]
 
       {:ok, _value} ->
         []
@@ -165,17 +174,6 @@ defmodule RequestValidations.Validations do
     end)
   end
 
-  @spec validate_date_from_less_than_date_to(map()) :: [ValidationError.t()]
-  def validate_date_from_less_than_date_to(attrs) do
-    with {:ok, from} <- Map.fetch(attrs, :from),
-         {:ok, to} <- Map.fetch(attrs, :to),
-         :gt <- Date.compare(from, to) do
-      [ValidationError.new("from", "from must be less than to")]
-    else
-      _else -> []
-    end
-  end
-
   @spec validate_boolean_fields(map(), [atom()]) :: [ValidationError.t()]
   def validate_boolean_fields(attrs, keys) do
     Enum.reduce(keys, [], fn key, acc ->
@@ -198,7 +196,7 @@ defmodule RequestValidations.Validations do
     do: [ValidationError.new("#{key}", "#{key} must be a UUID (value: #{value})")]
 
   defp validate_uuid(key, value) do
-    case Ecto.UUID.dump(value) do
+    case Conversions.parse(value, :uuid) do
       {:ok, _customer_uuid} ->
         []
 
@@ -211,43 +209,4 @@ defmodule RequestValidations.Validations do
         ]
     end
   end
-
-  # TODO: DO not think we want those here
-  # @spec validate_bic(map(), String.t()) :: [ValidationError.t()]
-  # def validate_bic(%{bic: bic}, prefix) do
-  #   case Bankster.bic_valid?(bic) do
-  #     true ->
-  #       []
-  #
-  #     false ->
-  #       ValidationError.new(
-  #         "#{prefix}bic",
-  #         "bic must consists of 8 or 11 alphanumeric characters"
-  #       )
-  #   end
-  # end
-  #
-  # def validate_bic(_invalid_payload, _prefix), do: []
-  # @spec validate_amount(map()) :: [ValidationError.t()]
-  # def validate_amount(%{amount: amount}) when not is_integer(amount),
-  #   do: ValidationError.new("amount", "Amount must be an integer")
-  #
-  # def validate_amount(%{amount: amount}) when amount < 0,
-  #   do: ValidationError.new("amount", "Amount must have a non-negative value")
-  #
-  # def validate_amount(%{amount: amount}) when amount >= 9_223_372_036_854_775_807,
-  #   do: ValidationError.new("amount", "Amount is insanely huge")
-  #
-  # def validate_amount(_attrs), do: []
-  #
-  # @spec validate_currency_code(map()) :: [ValidationError.t()]
-  # def validate_currency_code(%{currency_code: currency_code}) when not is_nil(currency_code) do
-  #   if Currency.valid_code?(currency_code) do
-  #     []
-  #   else
-  #     ValidationError.new("currency_code", "Currency code must be a ISO-4217 code")
-  #   end
-  # end
-  #
-  # def validate_currency_code(_attrs), do: []
 end
