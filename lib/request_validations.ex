@@ -5,6 +5,13 @@ defmodule RequestValidations do
   """
   alias RequestValidations.ValidationError
 
+  defmacro __using__(_opts) do
+    quote do
+      import RequestValidations.{Conversions, Validations}
+      import RequestValidations
+    end
+  end
+
   @doc """
     Validates the given attributes with the given validations.
   """
