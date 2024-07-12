@@ -265,6 +265,7 @@ defmodule RequestValidations.ConversionsTest do
     end
 
     test "parses a valid UUID in mixed case" do
+      f
       uuid = "550e8400-C29B-41D4-a716-44665544F003"
 
       assert {:ok, @uuid_binary} ==

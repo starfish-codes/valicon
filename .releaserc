@@ -1,0 +1,16 @@
+{
+  "branches": ["main"],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "semantic-release-hex",
+    [
+      "@semantic-release/git",
+      {
+        "assets": ["CHANGELOG.md", "mix.exs"],
+        "message": "chore(release): v${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ],
+    "@semantic-release/github"
+  ]
+}
