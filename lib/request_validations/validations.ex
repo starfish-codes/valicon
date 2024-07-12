@@ -200,7 +200,7 @@ defmodule RequestValidations.Validations do
       {:ok, _customer_uuid} ->
         []
 
-      :error ->
+      {:error, :bad_uuid} ->
         [
           ValidationError.new(
             "#{key}",

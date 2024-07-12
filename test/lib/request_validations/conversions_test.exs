@@ -247,47 +247,46 @@ defmodule RequestValidations.ConversionsTest do
     end
   end
 
-  @uuid_binary <<85, 14, 132, 0, 194, 155, 65, 212, 167, 22, 68, 102, 85, 68, 240, 3>>
+  @uuid "550e8400-c29b-41d4-a716-44665544f003"
 
   describe "parse_uuid/1" do
     test "parses a valid UUID" do
       uuid = "550e8400-c29b-41d4-a716-44665544f003"
 
-      assert {:ok, @uuid_binary} ==
+      assert {:ok, @uuid} ==
                parse_uuid(uuid)
     end
 
     test "parses a valid UUID in upper case" do
       uuid = "550E8400-C29B-41D4-A716-44665544F003"
 
-      assert {:ok, @uuid_binary} ==
+      assert {:ok, @uuid} ==
                parse_uuid(uuid)
     end
 
     test "parses a valid UUID in mixed case" do
-      f
       uuid = "550e8400-C29B-41D4-a716-44665544F003"
 
-      assert {:ok, @uuid_binary} ==
+      assert {:ok, @uuid} ==
                parse_uuid(uuid)
     end
 
     test "does  parse a null UUID" do
-      assert {:ok, <<0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0>>} ==
+      assert {:ok, "00000000-0000-0000-0000-000000000000"} ==
                parse_uuid("00000000-0000-0000-0000-000000000000")
     end
 
     test "does not parse an invalid UUID with invalid characters" do
-      assert :error == parse_uuid("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
+      assert {:error, :bad_uuid} == parse_uuid("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
     end
 
     test "does not parse an invalid UUID with invalid format" do
-      assert :error == parse_uuid("xxxxxxxx-xxxx")
+      assert {:error, :bad_uuid} == parse_uuid("xxxxxxxx-xxxx")
     end
 
     test "does not parse a binary uuid" do
-      assert :error ==
-               parse_uuid(@uuid_binary)
+      assert {:error, :bad_uuid} ==
+               parse_uuid(<<85, 14, 132, 0, 194, 155, 65, 212, 167, 22, 68, 102, 85, 68, 240, 3>>)
     end
   end
 end
