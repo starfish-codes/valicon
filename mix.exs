@@ -1,9 +1,9 @@
-defmodule RequestValidations.MixProject do
+defmodule Valicon.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :request_validations,
+      app: :valicon,
       version: "0.1.0",
       elixir: "~> 1.16",
       start_permanent: Mix.env() == :prod,
@@ -26,7 +26,6 @@ defmodule RequestValidations.MixProject do
 
   defp deps do
     [
-      {:jason, "~>1.2"},
       # For testing
       {:excoveralls, "~> 0.10", only: :test},
       {:faker, "~> 0.17", only: [:test]}

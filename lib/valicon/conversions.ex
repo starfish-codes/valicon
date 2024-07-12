@@ -1,8 +1,8 @@
-defmodule RequestValidations.Conversions do
+defmodule Valicon.Conversions do
   @moduledoc """
     Data transformation functions. Pretty generic but used mostly before calling the validations.
   """
-  alias RequestValidations.ConversionError
+  alias Valicon.ConversionError
 
   @doc """
     Casts the string values inside the attrs map to the given types.

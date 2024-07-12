@@ -1,9 +1,9 @@
-defmodule RequestValidations.Validations do
+defmodule Valicon.Validations do
   @moduledoc """
     The different validations that can be applied to the attributes.
   """
-  alias RequestValidations.ValidationError
-  alias RequestValidations.Conversions
+  alias Valicon.ValidationError
+  alias Valicon.Conversions
 
   @spec validate_required_fields(map(), [atom()], String.t()) :: [ValidationError.t()]
   def validate_required_fields(attrs, keys, prefix \\ "") do
@@ -115,7 +115,7 @@ defmodule RequestValidations.Validations do
 
   @spec validate_range(map, atom, integer, integer, String.t()) :: [ValidationError.t()]
   def validate_range(attrs, key, from, to, prefix \\ "") do
-    RequestValidations.run_validations(attrs, [
+    Valicon.run_validations(attrs, [
       &validate_greater_than_or_equal_to(&1, key, from, prefix),
       &validate_less_than_or_equal_to(&1, key, to, prefix)
     ])

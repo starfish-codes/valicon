@@ -1,9 +1,9 @@
-defmodule RequestValidations.ConversionsTest do
+defmodule Valicon.ConversionsTest do
   use ExUnit.Case, async: true
 
-  alias RequestValidations.ConversionError
+  alias Valicon.ConversionError
 
-  import RequestValidations.Conversions
+  import Valicon.Conversions
 
   describe "cast/2" do
     test "casts the values of the given keys" do

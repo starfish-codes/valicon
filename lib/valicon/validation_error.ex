@@ -1,5 +1,4 @@
-defmodule RequestValidations.ConversionError do
-  @derive Jason.Encoder
+defmodule Valicon.ValidationError do
   defstruct ~w[message path]a
 
   @type t() :: %__MODULE__{

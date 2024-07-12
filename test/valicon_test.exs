@@ -1,8 +1,8 @@
-defmodule RequestValidationsTest do
+defmodule ValiconTest do
   use ExUnit.Case, async: true
-  alias RequestValidations.ValidationError
+  alias Valicon.ValidationError
 
-  import RequestValidations
+  import Valicon
 
   @attrs %{
     name: "Butterfree",

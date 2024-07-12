@@ -1,14 +1,14 @@
-defmodule RequestValidations do
+defmodule Valicon do
   @moduledoc """
     The collection of ectoless validation and helper functions for validation
-    of the pure data structures that came from the HTTP API.
+    of pure data structures.
   """
-  alias RequestValidations.ValidationError
+  alias Valicon.ValidationError
 
   defmacro __using__(_opts) do
     quote do
-      import RequestValidations.{Conversions, Validations}
-      import RequestValidations
+      import Valicon.{Conversions, Validations}
+      import Valicon
     end
   end
 

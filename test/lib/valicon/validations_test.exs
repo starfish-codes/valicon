@@ -1,8 +1,8 @@
-defmodule RequestValidations.ValidationsTest do
+defmodule Valicon.ValidationsTest do
   use ExUnit.Case, async: true
-  alias RequestValidations.ValidationError
+  alias Valicon.ValidationError
 
-  import RequestValidations.Validations
+  import Valicon.Validations
 
   @attrs %{
     name: "Butterfree",
@@ -37,7 +37,7 @@ defmodule RequestValidations.ValidationsTest do
 
       assert [] == validate_string_fields(%{}, ~w[name]a)
 
-      assert [%RequestValidations.ValidationError{message: "Can not be a list", path: "types"}] ==
+      assert [%Valicon.ValidationError{message: "Can not be a list", path: "types"}] ==
                validate_string_fields(@attrs, ~w[types]a)
 
       assert [
@@ -88,11 +88,11 @@ defmodule RequestValidations.ValidationsTest do
       assert [] == validate_list(@attrs, :types, ~w[bug flying])
 
       assert [
-               %RequestValidations.ValidationError{
+               %Valicon.ValidationError{
                  message: "types bug is not allowed",
                  path: "types"
                },
-               %RequestValidations.ValidationError{
+               %Valicon.ValidationError{
                  message: "types flying is not allowed",
                  path: "types"
                }
@@ -207,14 +207,14 @@ defmodule RequestValidations.ValidationsTest do
                validate_uuid_fields(%{@attrs | id: nil}, ~w[id]a)
 
       assert [
-               %RequestValidations.ValidationError{
+               %Valicon.ValidationError{
                  message: "id must be a UUID (value: 123)",
                  path: "id"
                }
              ] == validate_uuid_fields(%{@attrs | id: "123"}, ~w[id]a)
 
       assert [
-               %RequestValidations.ValidationError{
+               %Valicon.ValidationError{
                  message: "id must be a UUID (value: 12)",
                  path: "id"
                }
