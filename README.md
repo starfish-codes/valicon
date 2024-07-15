@@ -9,7 +9,7 @@ of pure data structures.
 ```elixir
 defp deps do
   [
-    {:request_validations, "~> 0.1.0"}
+    {:valicon, "~> 1.0.2"}
   ]
 end
 ```
