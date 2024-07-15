@@ -20,7 +20,7 @@ First we need a module that will handle the validation of the data. This module 
 
 ```elixir
 defmodule MaApp.CustomerRequest do 
-    use RequestValidations
+    use Valicon
  
     def new(attrs) do 
         attrs 
