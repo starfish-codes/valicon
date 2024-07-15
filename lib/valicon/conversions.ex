@@ -50,7 +50,6 @@ defmodule Valicon.Conversions do
   def parse(value, :boolean), do: parse_boolean(value)
   def parse(value, :list), do: parse_list(value)
   def parse(value, :string), do: parse_string(value)
-  def parse(value, :uuid), do: parse_uuid(value)
 
   @spec parse_string(term()) :: {:ok, String.t()} | {:error, :bad_string}
   def parse_string(value) when is_binary(value), do: {:ok, value}
@@ -80,17 +79,6 @@ defmodule Valicon.Conversions do
   def parse_list(list) when is_list(list), do: {:ok, list}
   def parse_list(val) when is_binary(val), do: {:ok, String.split(val, ",")}
   def parse_list(_unexpected), do: {:error, :bad_list}
-
-  def parse_uuid(uuid_string) do
-    if String.match?(
-         uuid_string,
-         ~r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"i
-       ) do
-      {:ok, String.downcase(uuid_string)}
-    else
-      {:error, :bad_uuid}
-    end
-  end
 
   defp convertion_error(key, type),
     do: ConversionError.new("#{key}", "#{key} must be a value of #{type} type")

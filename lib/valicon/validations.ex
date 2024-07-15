@@ -3,7 +3,6 @@ defmodule Valicon.Validations do
     The different validations that can be applied to the attributes.
   """
   alias Valicon.ValidationError
-  alias Valicon.Conversions
 
   @spec validate_required_fields(map(), [atom()], String.t()) :: [ValidationError.t()]
   def validate_required_fields(attrs, keys, prefix \\ "") do
@@ -196,17 +195,18 @@ defmodule Valicon.Validations do
     do: [ValidationError.new("#{key}", "#{key} must be a UUID (value: #{value})")]
 
   defp validate_uuid(key, value) do
-    case Conversions.parse(value, :uuid) do
-      {:ok, _customer_uuid} ->
-        []
-
-      {:error, :bad_uuid} ->
-        [
-          ValidationError.new(
-            "#{key}",
-            "#{key} must be a UUID (value: #{value})"
-          )
-        ]
+    if String.match?(
+         value,
+         ~r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"i
+       ) do
+      []
+    else
+      [
+        ValidationError.new(
+          "#{key}",
+          "#{key} must be a UUID (value: #{value})"
+        )
+      ]
     end
   end
 end
