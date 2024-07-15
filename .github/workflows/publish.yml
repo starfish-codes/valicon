@@ -1,0 +1,29 @@
+name: Publish
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  publish:
+
+    name: Publish on hex.pm
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Elixir
+      uses: erlef/setup-beam@a6e26b22319003294c58386b6f25edbc7336819a # v1.18.0
+      with:
+        version-file: ".tool-versions"
+        version-type: strict
+
+    - name: Install deps
+      run: mix deps.get
+
+    - name: Publish
+      env:
+        HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+      run: mix hex.publish --yes
+
