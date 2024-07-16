@@ -2,7 +2,7 @@ defmodule Valicon.MixProject do
   use Mix.Project
 
   @name "Valicon"
-  @version "1.0.2"
+  @version "1.0.1"
   @repo_url "https://github.com/starfish-codes/valicon"
 
   def project do
@@ -41,21 +41,6 @@ defmodule Valicon.MixProject do
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.34", only: [:dev], runtime: false}
-    ]
-  end
-
-  defp package do
-    [
-      links: %{"GitHub" => @repo_url},
-      licenses: ["MIT"]
-    ]
-  end
-
-  defp docs do
-    [
-      source_ref: "v#{@version}",
-      source_url: @repo_url,
-      main: @name
     ]
   end
 
