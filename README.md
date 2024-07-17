@@ -8,7 +8,7 @@ A comprehensive set of data structure validation and related helper functions, d
 ```elixir
 defp deps do
   [
-    {:valicon, "~> 1.0.2"}
+    {:valicon, "~> 1.0"}
   ]
 end
 ```

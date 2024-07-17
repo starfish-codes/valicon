@@ -222,4 +222,54 @@ defmodule Valicon.ValidationsTest do
                validate_uuid_fields(%{@attrs | id: 12}, ~w[id]a)
     end
   end
+
+  describe "validate_fqdn/3" do
+    test "validates FQDN fields" do
+      assert [] == validate_fqdn(%{@attrs | pokedex_url: "www.pokemon.com"}, :pokedex_url)
+
+      assert [] == validate_fqdn(%{}, :pokedex_url)
+
+      assert [] == validate_fqdn(%{@attrs | pokedex_url: nil}, :pokedex_url)
+
+      assert [
+               %Valicon.ValidationError{
+                 message: "Domain must be a valid FQDN",
+                 path: "pokedex_url"
+               }
+             ] == validate_fqdn(@attrs, :pokedex_url)
+    end
+  end
+
+  describe "fqdn_valid?/1" do
+    test "valid FQDNs are valid" do
+      list = ~w[
+        911.gov
+        google.com
+        stackoverflow.com
+        api.stripe.com
+        hellgate.adyen.io
+        whaterver.else
+        whaterver-else.com
+      ]
+
+      assert Enum.all?(list, &fqdn_valid?/1)
+    end
+
+    test "invalid FQDNs are not" do
+      list = ~w[
+        911
+        127.0.0.1
+        localhost
+        a-.com
+        -a.com
+        a.66
+        whaterver_else.com
+      ]
+
+      assert Enum.all?(list, fn invalid -> !fqdn_valid?(invalid) end)
+      refute fqdn_valid?("")
+      refute fqdn_valid?(".")
+      refute fqdn_valid?("stripe dot com")
+    end
+  end
 end

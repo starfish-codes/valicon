@@ -209,4 +209,49 @@ defmodule Valicon.Validations do
       ]
     end
   end
+
+  @spec validate_fqdn(map(), atom(), String.t()) :: [ValidationError.t()]
+  def validate_fqdn(attrs, key, prefix \\ "") do
+    case Map.fetch(attrs, key) do
+      {:ok, value} -> validate_fqdn_value(value, key, prefix)
+      :error -> []
+    end
+  end
+
+  defp validate_fqdn_value(nil, _key, _prefix), do: []
+
+  defp validate_fqdn_value(value, key, prefix) do
+    if fqdn_valid?(value) do
+      []
+    else
+      [ValidationError.new("#{prefix}#{key}", "Domain must be a valid FQDN")]
+    end
+  end
+
+  @spec fqdn_valid?(String.t()) :: boolean()
+  def fqdn_valid?(fqdn), do: fqdn_valid_length?(fqdn) && fqdn_valid_labels?(fqdn)
+
+  defp fqdn_valid_length?(fqdn), do: String.length(fqdn) <= 253
+
+  defp fqdn_valid_labels?(fqdn) when is_binary(fqdn) do
+    fqdn
+    |> String.split(".")
+    |> Enum.reverse()
+    |> case do
+      [""] -> false
+      [tld | labels] -> fqdn_valid_tld?(tld) && fqdn_valid_labels?(labels)
+    end
+  end
+
+  defp fqdn_valid_labels?([]), do: false
+
+  defp fqdn_valid_labels?(labels) when is_list(labels),
+    do: Enum.all?(labels, &fqdn_valid_label?/1)
+
+  defp fqdn_valid_label?(label) do
+    !String.starts_with?(label, "-") && !String.ends_with?(label, "-") &&
+      String.match?(label, ~r/^[[:alnum:]-]{1,63}$/)
+  end
+
+  defp fqdn_valid_tld?(tld), do: String.match?(tld, ~r/^[[:alpha:]]{2,63}$/)
 end
