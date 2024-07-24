@@ -93,10 +93,34 @@ defmodule Valicon.Validations do
     end
   end
 
-  @spec validate_url(map, atom) :: [ValidationError.t()]
-  def validate_url(attrs, key) do
+  @spec validate_datetime_fields(map(), [atom()], String.t()) :: [ValidationError.t()]
+  def validate_datetime_fields(attrs, keys, prefix \\ "") do
+    Enum.reduce(keys, [], fn key, acc ->
+      validate_datetime("#{prefix}#{key}", Map.get(attrs, key)) ++ acc
+    end)
+  end
+
+  @spec validate_datetime(map(), atom()) :: [ValidationError.t()]
+  def validate_datetime(_key, nil), do: []
+
+  def validate_datetime(key, value) do
+    case DateTime.from_iso8601(value) do
+      {:ok, _datetime, _offset} -> []
+      {:error, error} -> [ValidationError.new(key, "is not a valid datetime: #{error}")]
+    end
+  end
+
+  @spec validate_url_fields(map(), [atom()], String.t()) :: [ValidationError.t()]
+  def validate_url_fields(attrs, keys, prefix \\ "") do
+    Enum.reduce(keys, [], fn key, acc ->
+      validate_url(attrs, key, prefix) ++ acc
+    end)
+  end
+
+  @spec validate_url(map, atom, String.t()) :: [ValidationError.t()]
+  def validate_url(attrs, key, prefix \\ "") do
     case Map.fetch(attrs, key) do
-      {:ok, value} when not is_nil(value) -> validate_url_value(value, key)
+      {:ok, value} when not is_nil(value) -> validate_url_value(value, "#{prefix}#{key}")
       {:ok, nil} -> []
       :error -> []
     end

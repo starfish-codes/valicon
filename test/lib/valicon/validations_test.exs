@@ -18,7 +18,8 @@ defmodule Valicon.ValidationsTest do
     is_mega: false,
     pokedex_url_base64_encoded: "aHR0cHM6Ly93d3cucG9rZW1vbi5jb20vdXMvcG9rZWRleC9idXR0ZXJmcmVl",
     pokedex_url: "https://www.pokemon.com/us/pokedex/butterfree",
-    id: Faker.UUID.v4()
+    id: Faker.UUID.v4(),
+    created_at: "2015-01-23T23:50:07Z"
   }
 
   describe "validate_required_fields/2" do
@@ -112,6 +113,38 @@ defmodule Valicon.ValidationsTest do
              ] == validate_enum(@attrs, :hp, 80..83)
 
       assert [] == validate_enum(@attrs, :exp, 50..80)
+    end
+  end
+
+  describe "validate_datetime_fields/3" do
+    test "validates datetime fields" do
+      assert [] == validate_datetime_fields(@attrs, ~w[created_at]a)
+      assert [] == validate_datetime_fields(@attrs, ~w[garbage]a)
+
+      assert [
+               %ValidationError{
+                 message: "is not a valid datetime: invalid_format",
+                 path: "created_at"
+               }
+             ] ==
+               validate_datetime_fields(
+                 %{@attrs | created_at: "2015-01-23P23:50:07"},
+                 ~w[created_at]a
+               )
+    end
+  end
+
+  describe "validate_url_fields/3" do
+    test "validates url fields" do
+      assert [] == validate_url_fields(@attrs, ~w[pokedex_url]a)
+
+      assert [
+               %ValidationError{
+                 message: "Invalid URL",
+                 path: "pokedex_url"
+               }
+             ] ==
+               validate_url_fields(%{@attrs | pokedex_url: "garbage"}, ~w[pokedex_url]a)
     end
   end
 
