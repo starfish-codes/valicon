@@ -246,4 +246,11 @@ defmodule Valicon.ConversionsTest do
              } == transform_in(map, :key, &String.upcase/1)
     end
   end
+
+  describe "rename_key/3" do
+    test "renames key in the map" do
+      assert %{baz: :bar, meta: "test"} == rename_key(%{foo: :bar, meta: "test"}, :foo, :baz)
+      assert %{meta: "test"} == rename_key(%{meta: "test"}, :foo, :baz)
+    end
+  end
 end
