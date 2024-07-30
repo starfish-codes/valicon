@@ -3,6 +3,9 @@ defmodule Valicon do
     The collection of ectoless validation and helper functions for validation
     of pure data structures.
   """
+
+  @type key() :: atom() | String.t()
+
   alias Valicon.ValidationError
 
   defmacro __using__(_opts) do

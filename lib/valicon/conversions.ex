@@ -132,4 +132,12 @@ defmodule Valicon.Conversions do
         attrs
     end
   end
+
+  @spec rename_key(map(), Valicon.key(), Valicon.key()) :: map()
+  def rename_key(map, from, to) do
+    case Map.pop(map, from) do
+      {nil, map} -> map
+      {value, rest} -> Map.put(rest, to, value)
+    end
+  end
 end

@@ -4,7 +4,7 @@ defmodule Valicon.Validations do
   """
   alias Valicon.ValidationError
 
-  @spec validate_required_fields(map(), [atom()], String.t()) :: [ValidationError.t()]
+  @spec validate_required_fields(map(), [Valicon.key()], String.t()) :: [ValidationError.t()]
   def validate_required_fields(attrs, keys, prefix \\ "") do
     keys
     |> Enum.reject(fn key -> Map.has_key?(attrs, key) end)
@@ -13,14 +13,14 @@ defmodule Valicon.Validations do
     end)
   end
 
-  @spec validate_string_fields(map(), [atom()], String.t()) :: [ValidationError.t()]
+  @spec validate_string_fields(map(), [Valicon.key()], String.t()) :: [ValidationError.t()]
   def validate_string_fields(attrs, keys, prefix \\ "") do
     Enum.reduce(keys, [], fn key, acc ->
       validate_string("#{prefix}#{key}", Map.get(attrs, key)) ++ acc
     end)
   end
 
-  @spec validate_base64_url_fields(map(), [atom()], String.t()) :: [ValidationError.t()]
+  @spec validate_base64_url_fields(map(), [Valicon.key()], String.t()) :: [ValidationError.t()]
   def validate_base64_url_fields(attrs, keys, prefix \\ "") do
     Enum.reduce(keys, [], fn key, acc ->
       validate_base64_url("#{prefix}#{key}", Map.get(attrs, key)) ++ acc
@@ -41,7 +41,7 @@ defmodule Valicon.Validations do
     end
   end
 
-  @spec validate_not_nullable_fields(map(), [atom()], String.t()) :: [ValidationError.t()]
+  @spec validate_not_nullable_fields(map(), [Valicon.key()], String.t()) :: [ValidationError.t()]
   def validate_not_nullable_fields(attrs, keys, prefix \\ "") do
     keys
     |> Enum.filter(fn key -> nulled_key?(attrs, key) end)
@@ -56,7 +56,7 @@ defmodule Valicon.Validations do
   defp nulled_key?(attrs, key),
     do: Map.has_key?(attrs, key) && Map.get(attrs, key) == nil
 
-  @spec validate_list(map(), atom(), [String.t()], String.t()) :: [ValidationError.t()]
+  @spec validate_list(map(), Valicon.key(), [String.t()], String.t()) :: [ValidationError.t()]
   def validate_list(attrs, key, allowed, prefix \\ "") do
     attrs
     |> Map.get(key, [])
@@ -67,7 +67,7 @@ defmodule Valicon.Validations do
     end)
   end
 
-  @spec validate_enum(map(), atom(), list(), String.t()) :: [ValidationError.t()]
+  @spec validate_enum(map(), Valicon.key(), list(), String.t()) :: [ValidationError.t()]
   def validate_enum(attrs, key, allowed, prefix \\ "") do
     case Map.fetch(attrs, key) do
       {:ok, value} ->
@@ -93,14 +93,14 @@ defmodule Valicon.Validations do
     end
   end
 
-  @spec validate_datetime_fields(map(), [atom()], String.t()) :: [ValidationError.t()]
+  @spec validate_datetime_fields(map(), [Valicon.key()], String.t()) :: [ValidationError.t()]
   def validate_datetime_fields(attrs, keys, prefix \\ "") do
     Enum.reduce(keys, [], fn key, acc ->
       validate_datetime("#{prefix}#{key}", Map.get(attrs, key)) ++ acc
     end)
   end
 
-  @spec validate_datetime(map(), atom()) :: [ValidationError.t()]
+  @spec validate_datetime(Valicon.key(), nil | String.t()) :: [ValidationError.t()]
   def validate_datetime(_key, nil), do: []
 
   def validate_datetime(key, value) do
@@ -110,14 +110,14 @@ defmodule Valicon.Validations do
     end
   end
 
-  @spec validate_url_fields(map(), [atom()], String.t()) :: [ValidationError.t()]
+  @spec validate_url_fields(map(), [Valicon.key()], String.t()) :: [ValidationError.t()]
   def validate_url_fields(attrs, keys, prefix \\ "") do
     Enum.reduce(keys, [], fn key, acc ->
       validate_url(attrs, key, prefix) ++ acc
     end)
   end
 
-  @spec validate_url(map, atom, String.t()) :: [ValidationError.t()]
+  @spec validate_url(map(), Valicon.key(), String.t()) :: [ValidationError.t()]
   def validate_url(attrs, key, prefix \\ "") do
     case Map.fetch(attrs, key) do
       {:ok, value} when not is_nil(value) -> validate_url_value(value, "#{prefix}#{key}")
@@ -136,7 +136,9 @@ defmodule Valicon.Validations do
     end
   end
 
-  @spec validate_range(map, atom, integer, integer, String.t()) :: [ValidationError.t()]
+  @spec validate_range(map(), Valicon.key(), integer(), integer(), String.t()) :: [
+          ValidationError.t()
+        ]
   def validate_range(attrs, key, from, to, prefix \\ "") do
     Valicon.run_validations(attrs, [
       &validate_greater_than_or_equal_to(&1, key, from, prefix),
@@ -163,7 +165,9 @@ defmodule Valicon.Validations do
     end
   end
 
-  @spec validate_less_than_or_equal_to(map, atom, integer, String.t()) :: [ValidationError.t()]
+  @spec validate_less_than_or_equal_to(map(), Valicon.key(), integer(), String.t()) :: [
+          ValidationError.t()
+        ]
   def validate_less_than_or_equal_to(attrs, key, limit, prefix \\ "") do
     case Map.fetch(attrs, key) do
       {:ok, value} when value > limit ->
@@ -234,7 +238,7 @@ defmodule Valicon.Validations do
     end
   end
 
-  @spec validate_fqdn(map(), atom(), String.t()) :: [ValidationError.t()]
+  @spec validate_fqdn(map(), Valicon.key(), String.t()) :: [ValidationError.t()]
   def validate_fqdn(attrs, key, prefix \\ "") do
     case Map.fetch(attrs, key) do
       {:ok, value} -> validate_fqdn_value(value, key, prefix)
