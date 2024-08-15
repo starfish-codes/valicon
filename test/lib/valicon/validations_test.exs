@@ -38,7 +38,7 @@ defmodule Valicon.ValidationsTest do
 
       assert [] == validate_string_fields(%{}, ~w[name]a)
 
-      assert [%Valicon.ValidationError{message: "Can not be a list", path: "types"}] ==
+      assert [%Valicon.ValidationError{message: "Cannot be a list", path: "types"}] ==
                validate_string_fields(@attrs, ~w[types]a)
 
       assert [
@@ -46,7 +46,7 @@ defmodule Valicon.ValidationsTest do
              ] == validate_string_fields(@attrs, ~w[name number hp]a)
 
       assert [
-               %ValidationError{path: "mod", message: "Can not be empty"}
+               %ValidationError{path: "mod", message: "Cannot be empty"}
              ] == validate_string_fields(@attrs, ~w[name number mod]a)
     end
   end
