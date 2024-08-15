@@ -4,6 +4,8 @@ defmodule Valicon.Validations do
   """
   alias Valicon.ValidationError
 
+  @uuid_regex ~r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"i
+
   @spec validate_required_fields(map(), [Valicon.key()], String.t()) :: [ValidationError.t()]
   def validate_required_fields(attrs, keys, prefix \\ "") do
     keys
@@ -184,10 +186,10 @@ defmodule Valicon.Validations do
   defp validate_string(_key, nil), do: []
 
   defp validate_string(key, ""),
-    do: [ValidationError.new("#{key}", "Can not be empty")]
+    do: [ValidationError.new("#{key}", "Cannot be empty")]
 
   defp validate_string(key, value) when is_list(value),
-    do: [ValidationError.new("#{key}", "Can not be a list")]
+    do: [ValidationError.new("#{key}", "Cannot be a list")]
 
   defp validate_string(key, value) when not is_binary(value),
     do: [ValidationError.new("#{key}", "#{key} must be a string")]
@@ -195,9 +197,9 @@ defmodule Valicon.Validations do
   defp validate_string(_key, _value), do: []
 
   @spec validate_uuid_fields(map(), [atom()]) :: [ValidationError.t()]
-  def validate_uuid_fields(attrs, keys) do
+  def validate_uuid_fields(attrs, keys, prefix \\ "") do
     Enum.reduce(keys, [], fn key, acc ->
-      validate_uuid(key, Map.get(attrs, key)) ++ acc
+      validate_uuid("#{prefix}#{key}", Map.get(attrs, key)) ++ acc
     end)
   end
 
@@ -223,10 +225,7 @@ defmodule Valicon.Validations do
     do: [ValidationError.new("#{key}", "#{key} must be a UUID (value: #{value})")]
 
   defp validate_uuid(key, value) do
-    if String.match?(
-         value,
-         ~r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"i
-       ) do
+    if String.match?(value, @uuid_regex) do
       []
     else
       [
