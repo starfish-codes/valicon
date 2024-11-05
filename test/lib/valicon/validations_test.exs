@@ -227,6 +227,15 @@ defmodule Valicon.ValidationsTest do
                }
              ] ==
                validate_boolean_fields(%{@attrs | is_mega: "yes"}, ~w[is_mega]a)
+
+      # Can have a prefix
+      assert [
+               %ValidationError{
+                 message: "pokemon.is_mega must be a boolean (value: yes)",
+                 path: "pokemon.is_mega"
+               }
+             ] ==
+               validate_boolean_fields(%{@attrs | is_mega: "yes"}, ~w[is_mega]a, "pokemon.")
     end
   end
 

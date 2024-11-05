@@ -204,10 +204,10 @@ defmodule Valicon.Validations do
   end
 
   @spec validate_boolean_fields(map(), [atom()]) :: [ValidationError.t()]
-  def validate_boolean_fields(attrs, keys) do
+  def validate_boolean_fields(attrs, keys, prefix \\ "") do
     Enum.reduce(keys, [], fn key, acc ->
       case Map.fetch(attrs, key) do
-        {:ok, value} -> validate_boolean(key, value) ++ acc
+        {:ok, value} -> validate_boolean("#{prefix}#{key}", value) ++ acc
         :error -> acc
       end
     end)
