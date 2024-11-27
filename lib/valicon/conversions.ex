@@ -6,9 +6,9 @@ defmodule Valicon.Conversions do
 
   @doc """
     Casts the string values inside the attrs map to the given types.
-    
+
     ## Examples
-    
+
         iex> cast(%{name: "Butterfree", number: "012"}, [name: :string, number: :integer])
         {:ok, %{name: "Butterfree", number: 12}}
   """
@@ -139,5 +139,14 @@ defmodule Valicon.Conversions do
       {nil, map} -> map
       {value, rest} -> Map.put(rest, to, value)
     end
+  end
+
+  @spec atomize_values(map(), [Valicon.key()]) :: map()
+  def atomize_values(map, keys) do
+    Map.new(map, fn {key, value} ->
+      if key in keys,
+        do: {key, String.to_existing_atom(value)},
+        else: {key, value}
+    end)
   end
 end

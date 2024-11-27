@@ -115,15 +115,35 @@ defmodule Valicon.ConversionsTest do
     end
   end
 
-  describe "atomize_keys/1" do
+  describe "atomize_keys/2" do
     test "atomizes only given keys" do
       map = %{"foo" => 1, "bar" => 2, "baz" => 3}
       assert %{foo: 1, bar: 2} == atomize_keys(map, ~w[foo bar]a)
     end
 
-    test "ignores non exsting keys" do
+    test "ignores non existing keys" do
       map = %{"foo" => 1, "bar" => 2, "baz" => 3}
       assert %{foo: 1, bar: 2, baz: 3} == atomize_keys(map, ~w[foo bar baz qux]a)
+    end
+  end
+
+  describe "atomize_values/2" do
+    test "atomize values" do
+      map = %{foo: "bar", bar: "foo"}
+
+      assert %{foo: :bar, bar: :foo} == atomize_values(map, ~w[foo bar]a)
+    end
+
+    test "ignores non existing keys" do
+      map = %{foo: "bar", bar: "foo"}
+
+      assert %{foo: :bar, bar: :foo} == atomize_values(map, ~w[foo bar baz]a)
+    end
+
+    test "only atomize informed keys" do
+      map = %{foo: "bar", bar: "foo"}
+
+      assert %{foo: :bar, bar: "foo"} == atomize_values(map, ~w[foo]a)
     end
   end
 
