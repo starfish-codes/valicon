@@ -141,12 +141,14 @@ defmodule Valicon.Conversions do
     end
   end
 
-  @spec atomize_values(map(), [Valicon.key()]) :: map()
-  def atomize_values(map, keys) do
-    Map.new(map, fn {key, value} ->
-      if key in keys,
-        do: {key, String.to_existing_atom(value)},
-        else: {key, value}
-    end)
+  @spec atomize_value(map(), Valicon.key(), [atom()]) :: map()
+  def atomize_value(attrs, key, possible_values) do
+    if Map.has_key?(attrs, key) do
+      Map.update!(attrs, key, fn value ->
+        Enum.find(possible_values, value, fn atom -> Atom.to_string(atom) == value end)
+      end)
+    else
+      attrs
+    end
   end
 end
