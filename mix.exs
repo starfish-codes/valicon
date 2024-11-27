@@ -2,7 +2,7 @@ defmodule Valicon.MixProject do
   use Mix.Project
 
   @name "Valicon"
-  @version "1.3.2"
+  @version "1.4.0"
   @repo_url "https://github.com/starfish-codes/valicon"
 
   def project do
