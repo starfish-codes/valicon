@@ -58,6 +58,7 @@ defmodule Valicon.Validations do
   defp nulled_key?(attrs, key),
     do: Map.has_key?(attrs, key) && Map.get(attrs, key) == nil
 
+  @spec validate_list(map(), Valicon.key(), [atom()], String.t()) :: [ValidationError.t()]
   @spec validate_list(map(), Valicon.key(), [String.t()], String.t()) :: [ValidationError.t()]
   def validate_list(attrs, key, allowed, prefix \\ "") do
     attrs
