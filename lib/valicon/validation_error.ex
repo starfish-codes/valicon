@@ -1,4 +1,6 @@
 defmodule Valicon.ValidationError do
+  @moduledoc false
+
   defstruct ~w[message path]a
 
   @type t() :: %__MODULE__{

@@ -35,11 +35,19 @@ jobs:
         restore-keys: ${{ runner.os }}-mix-
     - name: Install dependencies
       run: mix deps.get
+
+    - name: Run credo
+      run: mix credo --strict
+
     - name: Run tests
       run: mix coveralls.json
+
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v4.0.1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         directory: ./cover/
         fail_ci_if_error: true
+
+    - name: Run dialyzer
+      run: mix dialyzer

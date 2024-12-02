@@ -113,6 +113,11 @@ defmodule Valicon.ConversionsTest do
                  date: :date
                )
     end
+
+    test "cast datetime" do
+      assert {:ok, %{created_at: ~U[2024-12-02 16:24:01.657224Z]}} =
+               cast(%{created_at: "2024-12-02T16:24:01.657224Z"}, created_at: :datetime)
+    end
   end
 
   describe "atomize_keys/2" do
@@ -127,7 +132,7 @@ defmodule Valicon.ConversionsTest do
     end
   end
 
-  describe "atomize_values/2" do
+  describe "atomize_value/2" do
     test "atomizes the value for the key" do
       map = %{scheme: "visa", expiry: "202408"}
       allowed_atoms = [:visa, :mastercard]
