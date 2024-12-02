@@ -40,20 +40,30 @@ defmodule Valicon.Conversions do
   end
 
   @spec parse(String.t(), :date) :: {:ok, Date.t()} | {:error, atom()}
+  @spec parse(String.t(), :datetime) :: {:ok, DateTime.t()} | {:error, atom()}
   @spec parse(String.t(), :integer) :: {:ok, integer()} | {:error, :bad_integer}
   @spec parse(String.t(), :boolean) :: {:ok, boolean()} | {:error, :bad_boolean}
   @spec parse(String.t() | [String.t()], :list) :: {:ok, [String.t()]}
   @spec parse(String.t(), :string) :: {:ok, String.t()}
   def parse(value, :date), do: Date.from_iso8601(value)
+  def parse(value, :datetime), do: parse_datetime(value)
   def parse(value, :integer), do: parse_integer(value)
   def parse(value, :float), do: parse_float(value)
   def parse(value, :boolean), do: parse_boolean(value)
   def parse(value, :list), do: parse_list(value)
   def parse(value, :string), do: parse_string(value)
 
+  @spec parse_datetime(term()) :: {:ok, DateTime.t()} | {:error, atom()}
+  def parse_datetime(value) do
+    with {:ok, datetime, _utc_offset} <- DateTime.from_iso8601(value) do
+      {:ok, datetime}
+    end
+  end
+
   @spec parse_string(term()) :: {:ok, String.t()} | {:error, :bad_string}
   def parse_string(value) when is_binary(value), do: {:ok, value}
   def parse_string(_value), do: {:error, :bad_string}
+
   @spec parse_integer(term()) :: {:ok, integer()} | {:error, :bad_integer}
   def parse_integer(value) do
     case Integer.parse(value) do
@@ -144,11 +154,15 @@ defmodule Valicon.Conversions do
   @spec atomize_value(map(), Valicon.key(), [atom()]) :: map()
   def atomize_value(attrs, key, possible_values) do
     if Map.has_key?(attrs, key) do
-      Map.update!(attrs, key, fn value ->
-        Enum.find(possible_values, value, fn atom -> Atom.to_string(atom) == value end)
-      end)
+      atomize_value_for_existing_key(attrs, key, possible_values)
     else
       attrs
     end
+  end
+
+  defp atomize_value_for_existing_key(attrs, key, possible_values) do
+    Map.update!(attrs, key, fn value ->
+      Enum.find(possible_values, value, fn atom -> Atom.to_string(atom) == value end)
+    end)
   end
 end
