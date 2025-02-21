@@ -4,6 +4,8 @@ defmodule Valicon.Conversions do
   """
   alias Valicon.ConversionError
 
+  defguardp is_pure_map(value) when is_map(value) and not is_struct(value)
+
   @doc """
     Casts the string values inside the attrs map to the given types.
 
@@ -115,7 +117,7 @@ defmodule Valicon.Conversions do
   defp stringify_key({key, value}, acc) when is_atom(key),
     do: stringify_key({Atom.to_string(key), value}, acc)
 
-  defp stringify_key({key, value}, acc) when is_map(value) or is_list(value),
+  defp stringify_key({key, value}, acc) when is_pure_map(value) or is_list(value),
     do: Map.put(acc, key, stringify_keys(value))
 
   defp stringify_key({key, value}, acc), do: Map.put(acc, key, value)
