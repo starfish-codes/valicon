@@ -148,6 +148,36 @@ defmodule Valicon.ConversionsTest do
     end
   end
 
+  describe "stringify_keys/1" do
+    test "stringifies keys of the maps and doesn't touch anything else" do
+      attrs = [
+        %{
+          name: "String",
+          foo: "bar",
+          need_stringify?: true,
+          "already a string?": "yes",
+          list: [%{foo: "bar"}]
+        },
+        "string",
+        :some_atom,
+        false
+      ]
+
+      assert [
+               %{
+                 "name" => "String",
+                 "foo" => "bar",
+                 "need_stringify?" => true,
+                 "already a string?" => "yes",
+                 "list" => [%{"foo" => "bar"}]
+               },
+               "string",
+               :some_atom,
+               false
+             ] = stringify_keys(attrs)
+    end
+  end
+
   describe "trim_whitespaces/1" do
     test "recursively removes all the trailing whitespaces of the map values" do
       map = %{
