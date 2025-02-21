@@ -150,13 +150,16 @@ defmodule Valicon.ConversionsTest do
 
   describe "stringify_keys/1" do
     test "stringifies keys of the maps and doesn't touch anything else" do
+      now = DateTime.utc_now()
+
       attrs = [
         %{
           name: "String",
           foo: "bar",
           need_stringify?: true,
           "already a string?": "yes",
-          list: [%{foo: "bar"}]
+          list: [%{foo: "bar"}],
+          now: now
         },
         "string",
         :some_atom,
@@ -169,7 +172,8 @@ defmodule Valicon.ConversionsTest do
                  "foo" => "bar",
                  "need_stringify?" => true,
                  "already a string?" => "yes",
-                 "list" => [%{"foo" => "bar"}]
+                 "list" => [%{"foo" => "bar"}],
+                 "now" => ^now
                },
                "string",
                :some_atom,
