@@ -105,6 +105,21 @@ defmodule Valicon.Conversions do
     end)
   end
 
+  @spec stringify_keys(map()) :: map()
+  @spec stringify_keys(list()) :: list()
+  @spec stringify_keys(term()) :: term()
+  def stringify_keys(attrs) when is_map(attrs), do: Enum.reduce(attrs, %{}, &stringify_key/2)
+  def stringify_keys(attrs) when is_list(attrs), do: Enum.map(attrs, &stringify_keys/1)
+  def stringify_keys(attrs), do: attrs
+
+  defp stringify_key({key, value}, acc) when is_atom(key),
+    do: stringify_key({Atom.to_string(key), value}, acc)
+
+  defp stringify_key({key, value}, acc) when is_map(value) or is_list(value),
+    do: Map.put(acc, key, stringify_keys(value))
+
+  defp stringify_key({key, value}, acc), do: Map.put(acc, key, value)
+
   @spec trim_whitespaces(any()) :: any()
   def trim_whitespaces(input) when is_map(input),
     do: Enum.into(input, %{}, fn {k, v} -> {k, trim_whitespaces(v)} end)
