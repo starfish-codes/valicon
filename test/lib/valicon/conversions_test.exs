@@ -204,6 +204,15 @@ defmodule Valicon.ConversionsTest do
                }
              } == trim_whitespaces(map)
     end
+
+    test "ignores date/datetime/naivedatime structs" do
+      dates = [~D[2025-02-18], ~U[2025-02-18 17:07:46.225776Z], ~N[2025-02-27 16:35:04.065640]]
+
+      for value <- dates do
+        assert %{inserted_at: ^value, name: "John Doe"} =
+                 trim_whitespaces(%{inserted_at: value, name: " John Doe   "})
+      end
+    end
   end
 
   describe "upcase_in/2" do

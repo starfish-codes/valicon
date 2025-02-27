@@ -123,7 +123,7 @@ defmodule Valicon.Conversions do
   defp stringify_key({key, value}, acc), do: Map.put(acc, key, value)
 
   @spec trim_whitespaces(any()) :: any()
-  def trim_whitespaces(input) when is_map(input),
+  def trim_whitespaces(input) when is_non_struct_map(input),
     do: Enum.into(input, %{}, fn {k, v} -> {k, trim_whitespaces(v)} end)
 
   def trim_whitespaces(input) when is_binary(input), do: String.trim(input)
