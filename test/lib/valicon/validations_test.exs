@@ -151,6 +151,16 @@ defmodule Valicon.ValidationsTest do
     end
   end
 
+  describe "validate_integer_fields/3" do
+    test "validate integer fields" do
+      assert [] ==
+               validate_integer_fields(%{@attrs | speed: 110}, ~w[speed]a)
+
+      assert [%Valicon.ValidationError{message: "speed must be an integer", path: "speed"}] ==
+               validate_integer_fields(%{@attrs | speed: true}, ~w[speed]a)
+    end
+  end
+
   describe "validate_url_fields/3" do
     test "validates url fields" do
       assert [] == validate_url_fields(@attrs, ~w[pokedex_url]a)

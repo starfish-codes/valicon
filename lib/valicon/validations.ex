@@ -118,6 +118,20 @@ defmodule Valicon.Validations do
   def validate_datetime(key, _value) do
     [ValidationError.new(key, "must be a string following the datetime standard from ISO 8601")]
   end
+
+  @spec validate_integer_fields(map(), list(atom())) :: [ValidationError.t()]
+  @spec validate_integer_fields(map(), list(atom()), String.t()) :: [ValidationError.t()]
+  def validate_integer_fields(attrs, keys, prefix \\ "") do
+    Enum.reduce(keys, [], fn key, acc ->
+      validate_integer("#{prefix}#{key}", Map.get(attrs, key)) ++ acc
+    end)
+  end
+
+  defp validate_integer(key, value) when not is_integer(value),
+    do: [ValidationError.new("#{key}", "#{key} must be an integer")]
+
+  defp validate_integer(_key, _value), do: []
+
   @spec validate_url_fields(map(), [Valicon.key()], String.t()) :: [ValidationError.t()]
   def validate_url_fields(attrs, keys, prefix \\ "") do
     Enum.reduce(keys, [], fn key, acc ->
