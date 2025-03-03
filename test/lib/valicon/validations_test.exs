@@ -121,6 +121,12 @@ defmodule Valicon.ValidationsTest do
       assert [] == validate_datetime_fields(@attrs, ~w[created_at]a)
       assert [] == validate_datetime_fields(@attrs, ~w[garbage]a)
 
+      assert [] ==
+               validate_datetime_fields(
+                 %{@attrs | created_at: DateTime.utc_now()},
+                 ~w[created_at]a
+               )
+
       assert [
                %ValidationError{
                  message: "is not a valid datetime: invalid_format",
@@ -129,6 +135,17 @@ defmodule Valicon.ValidationsTest do
              ] ==
                validate_datetime_fields(
                  %{@attrs | created_at: "2015-01-23P23:50:07"},
+                 ~w[created_at]a
+               )
+
+      assert [
+               %ValidationError{
+                 message: "must be a string following the datetime standard from ISO 8601",
+                 path: "created_at"
+               }
+             ] ==
+               validate_datetime_fields(
+                 %{@attrs | created_at: true},
                  ~w[created_at]a
                )
     end

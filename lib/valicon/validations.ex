@@ -106,13 +106,18 @@ defmodule Valicon.Validations do
   @spec validate_datetime(Valicon.key(), nil | String.t()) :: [ValidationError.t()]
   def validate_datetime(_key, nil), do: []
 
-  def validate_datetime(key, value) do
+  def validate_datetime(_key, value) when is_struct(value, DateTime), do: []
+
+  def validate_datetime(key, value) when is_binary(value) do
     case DateTime.from_iso8601(value) do
       {:ok, _datetime, _offset} -> []
       {:error, error} -> [ValidationError.new(key, "is not a valid datetime: #{error}")]
     end
   end
 
+  def validate_datetime(key, _value) do
+    [ValidationError.new(key, "must be a string following the datetime standard from ISO 8601")]
+  end
   @spec validate_url_fields(map(), [Valicon.key()], String.t()) :: [ValidationError.t()]
   def validate_url_fields(attrs, keys, prefix \\ "") do
     Enum.reduce(keys, [], fn key, acc ->
