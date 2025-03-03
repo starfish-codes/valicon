@@ -106,12 +106,31 @@ defmodule Valicon.Validations do
   @spec validate_datetime(Valicon.key(), nil | String.t()) :: [ValidationError.t()]
   def validate_datetime(_key, nil), do: []
 
-  def validate_datetime(key, value) do
+  def validate_datetime(_key, value) when is_struct(value, DateTime), do: []
+
+  def validate_datetime(key, value) when is_binary(value) do
     case DateTime.from_iso8601(value) do
       {:ok, _datetime, _offset} -> []
       {:error, error} -> [ValidationError.new(key, "is not a valid datetime: #{error}")]
     end
   end
+
+  def validate_datetime(key, _value) do
+    [ValidationError.new(key, "must be a string following the datetime standard from ISO 8601")]
+  end
+
+  @spec validate_integer_fields(map(), list(atom())) :: [ValidationError.t()]
+  @spec validate_integer_fields(map(), list(atom()), String.t()) :: [ValidationError.t()]
+  def validate_integer_fields(attrs, keys, prefix \\ "") do
+    Enum.reduce(keys, [], fn key, acc ->
+      validate_integer("#{prefix}#{key}", Map.get(attrs, key)) ++ acc
+    end)
+  end
+
+  defp validate_integer(key, value) when not is_integer(value),
+    do: [ValidationError.new("#{key}", "#{key} must be an integer")]
+
+  defp validate_integer(_key, _value), do: []
 
   @spec validate_url_fields(map(), [Valicon.key()], String.t()) :: [ValidationError.t()]
   def validate_url_fields(attrs, keys, prefix \\ "") do
