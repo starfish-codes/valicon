@@ -103,7 +103,7 @@ defmodule Valicon.ValidationsTest do
 
   describe "validate_enum/3" do
     test "validates enum fields" do
-      assert [] == validate_enum(@attrs, :hp, 50..80)
+      assert [] == validate_enum(%{@attrs | hp: nil}, :hp, 50..80)
 
       assert [
                %ValidationError{
@@ -155,6 +155,9 @@ defmodule Valicon.ValidationsTest do
     test "validate integer fields" do
       assert [] ==
                validate_integer_fields(%{@attrs | speed: 110}, ~w[speed]a)
+
+      assert [] ==
+               validate_integer_fields(%{@attrs | speed: nil}, ~w[speed]a)
 
       assert [%Valicon.ValidationError{message: "speed must be an integer", path: "speed"}] ==
                validate_integer_fields(%{@attrs | speed: true}, ~w[speed]a)
@@ -242,6 +245,7 @@ defmodule Valicon.ValidationsTest do
   describe "validate_boolean_fields/2" do
     test "validates booleam fields" do
       assert [] == validate_boolean_fields(@attrs, ~w[is_mega]a)
+      assert [] == validate_boolean_fields(%{@attrs | is_mega: nil}, ~w[is_mega]a)
       assert [] == validate_boolean_fields(%{@attrs | is_mega: false}, ~w[is_mega]a)
       assert [] == validate_boolean_fields(%{@attrs | is_mega: true}, ~w[is_mega]a)
 

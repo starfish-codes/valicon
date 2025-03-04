@@ -73,6 +73,9 @@ defmodule Valicon.Validations do
   @spec validate_enum(map(), Valicon.key(), list(), String.t()) :: [ValidationError.t()]
   def validate_enum(attrs, key, allowed, prefix \\ "") do
     case Map.fetch(attrs, key) do
+      {:ok, nil} ->
+        []
+
       {:ok, value} ->
         validate_enum_value(value, allowed, key, prefix)
 
@@ -126,6 +129,8 @@ defmodule Valicon.Validations do
       validate_integer("#{prefix}#{key}", Map.get(attrs, key)) ++ acc
     end)
   end
+
+  defp validate_integer(_key, nil), do: []
 
   defp validate_integer(key, value) when not is_integer(value),
     do: [ValidationError.new("#{key}", "#{key} must be an integer")]
@@ -233,6 +238,7 @@ defmodule Valicon.Validations do
     end)
   end
 
+  defp validate_boolean(_key, nil), do: []
   defp validate_boolean(_key, true), do: []
   defp validate_boolean(_key, false), do: []
 
