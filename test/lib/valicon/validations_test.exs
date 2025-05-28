@@ -281,18 +281,26 @@ defmodule Valicon.ValidationsTest do
 
       assert [
                %Valicon.ValidationError{
-                 message: "id must be a UUID (value: 123)",
+                 message: "id must be a UUID",
                  path: "id"
                }
              ] == validate_uuid_fields(%{@attrs | id: "123"}, ~w[id]a)
 
       assert [
                %Valicon.ValidationError{
-                 message: "id must be a UUID (value: 12)",
+                 message: "id must be a UUID",
                  path: "id"
                }
              ] ==
                validate_uuid_fields(%{@attrs | id: 12}, ~w[id]a)
+
+      assert [
+               %Valicon.ValidationError{
+                 message: "id must be a UUID",
+                 path: "id"
+               }
+             ] ==
+               validate_uuid_fields(%{@attrs | id: %{id: 12}}, ~w[id]a)
     end
   end
 
