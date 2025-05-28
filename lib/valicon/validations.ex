@@ -248,7 +248,7 @@ defmodule Valicon.Validations do
   defp validate_uuid(_key, nil), do: []
 
   defp validate_uuid(key, value) when not is_binary(value),
-    do: [ValidationError.new("#{key}", "#{key} must be a UUID (value: #{value})")]
+    do: [ValidationError.new("#{key}", "#{key} must be a UUID")]
 
   defp validate_uuid(key, value) do
     if String.match?(value, @uuid_regex) do
@@ -257,7 +257,7 @@ defmodule Valicon.Validations do
       [
         ValidationError.new(
           "#{key}",
-          "#{key} must be a UUID (value: #{value})"
+          "#{key} must be a UUID"
         )
       ]
     end
