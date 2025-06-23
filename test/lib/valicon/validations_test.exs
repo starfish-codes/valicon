@@ -175,6 +175,14 @@ defmodule Valicon.ValidationsTest do
                }
              ] ==
                validate_url_fields(%{@attrs | pokedex_url: "garbage"}, ~w[pokedex_url]a)
+
+      assert [
+               %ValidationError{
+                 message: "URL must be a string",
+                 path: "pokedex_url"
+               }
+             ] ==
+               validate_url_fields(%{@attrs | pokedex_url: 1}, ~w[pokedex_url]a)
     end
   end
 

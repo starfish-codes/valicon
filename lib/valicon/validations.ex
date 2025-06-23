@@ -153,7 +153,7 @@ defmodule Valicon.Validations do
     end
   end
 
-  defp validate_url_value(url, key) do
+  defp validate_url_value(url, key) when is_binary(url) do
     case URI.parse(url) do
       %URI{scheme: scheme} when not is_nil(scheme) ->
         []
@@ -162,6 +162,8 @@ defmodule Valicon.Validations do
         [ValidationError.new("#{key}", "Invalid URL")]
     end
   end
+
+  defp validate_url_value(_url, key), do: [ValidationError.new("#{key}", "URL must be a string")]
 
   @spec validate_range(map(), Valicon.key(), integer(), integer(), String.t()) :: [
           ValidationError.t()
