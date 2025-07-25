@@ -309,4 +309,26 @@ defmodule Valicon.Validations do
   end
 
   defp fqdn_valid_tld?(tld), do: String.match?(tld, ~r/^[[:alpha:]]{2,63}$/)
+
+  @spec validate_length(map(), list(), integer(), integer(), String.t()) :: [ValidationError.t()]
+  def validate_length(attrs, keys, min_len, max_len, prefix \\ "")
+
+  def validate_length(attrs, keys, min_len, max_len, prefix) when is_list(keys) do
+    Enum.reduce(keys, [], fn key, acc ->
+      do_validate_length(key, Map.get(attrs, key), min_len, max_len, prefix) ++ acc
+    end)
+  end
+
+  defp do_validate_length(key, value, min_len, max_len, prefix) when is_binary(value) do
+    length = String.length(value)
+
+    message =
+      "#{prefix}#{key} length must be greater than or equal to #{min_len} and less than or equal to #{max_len}"
+
+    if length < min_len or length > max_len,
+      do: [ValidationError.new("#{prefix}#{key}", message)],
+      else: []
+  end
+
+  defp do_validate_length(_key, _value, _min_len, _max_len, _prefix), do: []
 end
