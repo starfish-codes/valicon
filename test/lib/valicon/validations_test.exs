@@ -361,4 +361,20 @@ defmodule Valicon.ValidationsTest do
       refute fqdn_valid?("stripe dot com")
     end
   end
+
+  describe "validate_length/5" do
+    test "validates the string length" do
+      assert [] = validate_length(@attrs, ~w[pokedex_url]a, 1, 100)
+      assert [] = validate_length(%{@attrs | pokedex_url: nil}, ~w[pokedex_url]a, 1, 100)
+
+      assert [
+               %ValidationError{
+                 path: "pokedex_url",
+                 message:
+                   "pokedex_url length must be greater than or equal to 1 and less than or equal to 5"
+               }
+             ] =
+               validate_length(@attrs, ~w[pokedex_url]a, 1, 5)
+    end
+  end
 end
