@@ -2,7 +2,7 @@ defmodule Valicon.Validations do
   @moduledoc """
     The different validations that can be applied to the attributes.
   """
-  alias Valicon.ValidationError
+  alias Valicon.{Currency, ValidationError}
 
   @uuid_regex ~r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"i
 
@@ -309,6 +309,35 @@ defmodule Valicon.Validations do
   end
 
   defp fqdn_valid_tld?(tld), do: String.match?(tld, ~r/^[[:alpha:]]{2,63}$/)
+
+  @spec validate_currency_code(map(), atom()) :: [ValidationError.t()]
+  @spec validate_currency_code(map(), atom(), String.t()) :: [ValidationError.t()]
+  def validate_currency_code(attrs, key, prefix \\ "") do
+    currency_code = Map.get(attrs, key)
+
+    if Currency.valid_code?(currency_code),
+      do: [],
+      else: [ValidationError.new("#{prefix}#{key}", "#{prefix}#{key} must be a ISO-4217 code")]
+  end
+
+  @spec validate_amount_field(map(), atom()) :: [ValidationError.t()]
+  @spec validate_amount_field(map(), atom(), String.t()) :: [ValidationError.t()]
+  def validate_amount_field(attrs, key, prefix \\ "") do
+    attrs
+    |> Map.get(key)
+    |> validate_amount("#{prefix}#{key}", "#{prefix}#{key}")
+  end
+
+  defp validate_amount(amount, key, prefix) when not is_integer(amount),
+    do: [ValidationError.new(key, "#{prefix} must be an integer")]
+
+  defp validate_amount(amount, key, prefix) when amount < 0,
+    do: [ValidationError.new(key, "#{prefix} must have a non-negative value")]
+
+  defp validate_amount(amount, key, prefix) when amount >= 9_223_372_036_854_775_807,
+    do: [ValidationError.new(key, "#{prefix} is insanely huge")]
+
+  defp validate_amount(_amount, _key, _prefix), do: []
 
   @spec validate_length(map(), list(), integer(), integer(), String.t()) :: [ValidationError.t()]
   def validate_length(attrs, keys, min_len, max_len, prefix \\ "")

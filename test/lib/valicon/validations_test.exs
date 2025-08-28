@@ -19,7 +19,9 @@ defmodule Valicon.ValidationsTest do
     pokedex_url_base64_encoded: "aHR0cHM6Ly93d3cucG9rZW1vbi5jb20vdXMvcG9rZWRleC9idXR0ZXJmcmVl",
     pokedex_url: "https://www.pokemon.com/us/pokedex/butterfree",
     id: Faker.UUID.v4(),
-    created_at: "2015-01-23T23:50:07Z"
+    created_at: "2015-01-23T23:50:07Z",
+    currency_code: "EUR",
+    amount: 100
   }
 
   describe "validate_required_fields/2" do
@@ -375,6 +377,67 @@ defmodule Valicon.ValidationsTest do
                }
              ] =
                validate_length(@attrs, ~w[pokedex_url]a, 1, 5)
+    end
+  end
+
+  describe "validate_currency_code/3" do
+    test "validates a currency code" do
+      assert [] = validate_currency_code(@attrs, :currency_code)
+
+      assert [
+               %ValidationError{
+                 message: "currency_code must be a ISO-4217 code",
+                 path: "currency_code"
+               }
+             ] =
+               validate_currency_code(%{@attrs | currency_code: "LOP"}, :currency_code)
+
+      assert [
+               %ValidationError{
+                 message: "currency_code must be a ISO-4217 code",
+                 path: "currency_code"
+               }
+             ] =
+               validate_currency_code(%{@attrs | currency_code: true}, :currency_code)
+    end
+  end
+
+  describe "validate_amount/3" do
+    test "validates amount" do
+      assert [] = validate_amount_field(@attrs, :amount)
+
+      assert [
+               %ValidationError{
+                 message: "amount is insanely huge",
+                 path: "amount"
+               }
+             ] =
+               validate_amount_field(
+                 %{@attrs | amount: 9_999_999_999_999_999_999_999},
+                 :amount
+               )
+
+      assert [
+               %ValidationError{
+                 message: "amount must be an integer",
+                 path: "amount"
+               }
+             ] =
+               validate_amount_field(
+                 %{@attrs | amount: true},
+                 :amount
+               )
+
+      assert [
+               %ValidationError{
+                 message: "amount must have a non-negative value",
+                 path: "amount"
+               }
+             ] =
+               validate_amount_field(
+                 %{@attrs | amount: -100},
+                 :amount
+               )
     end
   end
 end
