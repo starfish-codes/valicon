@@ -35,6 +35,8 @@ defmodule Valicon.MixProject do
 
   defp deps do
     [
+      {:jason, "~> 1.4", optional: true},
+
       # For testing
       {:excoveralls, "~> 0.10", only: :test},
       {:faker, "~> 0.17", only: [:test]},
