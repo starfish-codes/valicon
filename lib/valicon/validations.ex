@@ -58,8 +58,7 @@ defmodule Valicon.Validations do
   defp nulled_key?(attrs, key),
     do: Map.has_key?(attrs, key) && Map.get(attrs, key) == nil
 
-  @spec validate_list(map(), Valicon.key(), [atom()], String.t()) :: [ValidationError.t()]
-  @spec validate_list(map(), Valicon.key(), [String.t()], String.t()) :: [ValidationError.t()]
+  @spec validate_list(map(), Valicon.key(), [Valicon.key()], String.t()) :: [ValidationError.t()]
   def validate_list(attrs, key, allowed, prefix \\ "") do
     attrs
     |> Map.get(key, [])
@@ -122,8 +121,8 @@ defmodule Valicon.Validations do
     [ValidationError.new(key, "must be a string following the datetime standard from ISO 8601")]
   end
 
-  @spec validate_integer_fields(map(), list(atom())) :: [ValidationError.t()]
-  @spec validate_integer_fields(map(), list(atom()), String.t()) :: [ValidationError.t()]
+  @spec validate_integer_fields(map(), list(Valicon.key())) :: [ValidationError.t()]
+  @spec validate_integer_fields(map(), list(Valicon.key()), String.t()) :: [ValidationError.t()]
   def validate_integer_fields(attrs, keys, prefix \\ "") do
     Enum.reduce(keys, [], fn key, acc ->
       validate_integer("#{prefix}#{key}", Map.get(attrs, key)) ++ acc
@@ -175,7 +174,9 @@ defmodule Valicon.Validations do
     ])
   end
 
-  @spec validate_greater_than_or_equal_to(map, atom, integer, String.t()) :: [ValidationError.t()]
+  @spec validate_greater_than_or_equal_to(map(), Valicon.key(), integer(), String.t()) :: [
+          ValidationError.t()
+        ]
   def validate_greater_than_or_equal_to(attrs, key, limit, prefix \\ "") do
     case Map.fetch(attrs, key) do
       {:ok, value} when value < limit ->
@@ -223,14 +224,14 @@ defmodule Valicon.Validations do
 
   defp validate_string(_key, _value), do: []
 
-  @spec validate_uuid_fields(map(), [atom()]) :: [ValidationError.t()]
+  @spec validate_uuid_fields(map(), [Valicon.key()]) :: [ValidationError.t()]
   def validate_uuid_fields(attrs, keys, prefix \\ "") do
     Enum.reduce(keys, [], fn key, acc ->
       validate_uuid("#{prefix}#{key}", Map.get(attrs, key)) ++ acc
     end)
   end
 
-  @spec validate_boolean_fields(map(), [atom()]) :: [ValidationError.t()]
+  @spec validate_boolean_fields(map(), [Valicon.key()]) :: [ValidationError.t()]
   def validate_boolean_fields(attrs, keys, prefix \\ "") do
     Enum.reduce(keys, [], fn key, acc ->
       case Map.fetch(attrs, key) do
