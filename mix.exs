@@ -16,14 +16,7 @@ defmodule Valicon.MixProject do
       package: package(),
       deps: deps(),
       docs: docs(),
-      test_coverage: [tool: ExCoveralls],
-      preferred_cli_env: [
-        coveralls: :test,
-        "coveralls.detail": :test,
-        "coveralls.post": :test,
-        "coveralls.html": :test,
-        "coveralls.json": :test
-      ]
+      test_coverage: [tool: ExCoveralls]
     ]
   end
 
@@ -33,13 +26,25 @@ defmodule Valicon.MixProject do
     ]
   end
 
+  def cli do
+    [
+      preferred_envs: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test,
+        "coveralls.json": :test
+      ]
+    ]
+  end
+
   defp deps do
     [
       {:jason, "~> 1.4", optional: true},
 
       # For testing
       {:excoveralls, "~> 0.10", only: :test},
-      {:faker, "~> 0.17", only: [:test]},
+      {:faker, github: "simpers/faker", ref: "6832510", only: [:test]},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
